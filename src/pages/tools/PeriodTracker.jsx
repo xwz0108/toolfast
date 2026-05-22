@@ -1,126 +1,78 @@
 import { useState, useEffect } from 'react'
-import { Typography, Box, Paper, Button, Chip, Stack, IconButton } from '@mui/material'
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
+import { Typography, Box, Paper, Button, Chip, Stack, TextField } from '@mui/material'
 import ToolLayout from '../../components/ToolLayout'
 
-const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-
 export default function PeriodTracker() {
-  const today = new Date()
-  const [viewYear, setViewYear] = useState(today.getFullYear())
-  const [viewMonth, setViewMonth] = useState(today.getMonth())
-  const [markedDays, setMarkedDays] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('periodDays') || '{}') } catch { return {} }
-  })
-  const [lastStart, setLastStart] = useState(() => {
-    try { return localStorage.getItem('periodLastStart') || null } catch { return null }
-  })
+  const [lastDate, setLastDate] = useState('')
+  const [cycleLength, setCycleLength] = useState(28)
+  const [predictions, setPredictions] = useState([])
+  const [saved, setSaved] = useState(false)
 
   useEffect(() => {
-    localStorage.setItem('periodDays', JSON.stringify(markedDays))
-  }, [markedDays])
-
-  const avgCycle = 28
-  const avgLength = 5
-
-  const predictedDays = []
-  if (lastStart) {
-    const start = new Date(lastStart + 'T00:00:00')
-    for (let i = 0; i < 6; i++) {
-      const next = new Date(start.getTime() + (avgCycle * (i + 1)) * 24 * 60 * 60 * 1000)
-      for (let d = 0; d < avgLength; d++) {
-        const day = new Date(next.getTime() + d * 24 * 60 * 60 * 1000)
-        predictedDays.push(day.toISOString().split('T')[0])
-      }
+    const saved = localStorage.getItem('periodTracker')
+    if (saved) {
+      const d = JSON.parse(saved)
+      setLastDate(d.lastDate)
+      setCycleLength(d.cycleLength)
     }
-  }
+  }, [])
 
-  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate()
-  const firstDay = new Date(viewYear, viewMonth, 1).getDay()
-
-  const toggleDay = (day) => {
-    const key = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
-    const newMarked = { ...markedDays }
-    if (newMarked[key]) {
-      delete newMarked[key]
-    } else {
-      newMarked[key] = true
-      if (!lastStart || new Date(key) < new Date(lastStart)) {
-        setLastStart(key)
-        localStorage.setItem('periodLastStart', key)
-      }
+  const calculate = () => {
+    if (!lastDate) return
+    const start = new Date(lastDate + 'T00:00:00')
+    const preds = []
+    for (let i = 1; i <= 6; i++) {
+      const next = new Date(start)
+      next.setDate(next.getDate() + cycleLength * i)
+      preds.push(next)
     }
-    setMarkedDays(newMarked)
+    setPredictions(preds)
+    localStorage.setItem('periodTracker', JSON.stringify({ lastDate, cycleLength }))
+    setSaved(true)
+    setTimeout(() => setSaved(false), 2000)
   }
 
-  const prevMonth = () => {
-    if (viewMonth === 0) { setViewMonth(11); setViewYear(y => y - 1) }
-    else setViewMonth(m => m - 1)
-  }
-  const nextMonth = () => {
-    if (viewMonth === 11) { setViewMonth(0); setViewYear(y => y + 1) }
-    else setViewMonth(m => m + 1)
-  }
-
-  const markedCount = Object.keys(markedDays).length
+  const formatDate = d => d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
 
   return (
-    <ToolLayout title="Period Tracker" description="Track and predict your cycle. All data stays private in your browser." category="Life Calculators">
+    <ToolLayout title="Period Tracker" description="Track and predict menstrual cycles. Private local-only storage with calendar predictions." category="Life Calculators">
       <Paper sx={{ p: 4, borderRadius: 4 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
-          <IconButton onClick={prevMonth}><ArrowBackIosIcon /></IconButton>
-          <Typography variant="h6" fontWeight={700}>{MONTHS[viewMonth]} {viewYear}</Typography>
-          <IconButton onClick={nextMonth}><ArrowForwardIosIcon /></IconButton>
+        <Stack spacing={3} mb={4}>
+          <Box>
+            <Typography fontWeight={600} gutterBottom>Last Period Start Date</Typography>
+            <TextField value={lastDate} onChange={e => setLastDate(e.target.value)} type="date" size="small" fullWidth InputLabelProps={{ shrink: true }} />
+          </Box>
+          <Box>
+            <Typography fontWeight={600} gutterBottom>Cycle Length ({cycleLength} days)</Typography>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Button variant="outlined" size="small" onClick={() => setCycleLength(l => Math.max(20, l-1))}>-</Button>
+              <Typography variant="h6" fontWeight={700}>{cycleLength}</Typography>
+              <Button variant="outlined" size="small" onClick={() => setCycleLength(l => Math.min(45, l+1))}>+</Button>
+            </Stack>
+          </Box>
+          <Button variant="contained" onClick={calculate} size="large" sx={{ px: 4 }}>Calculate Predictions</Button>
+          {saved && <Chip label="Saved to browser" color="success" size="small" sx={{ alignSelf: 'center' }} />}
         </Stack>
 
-        {/* Day headers */}
-        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 0.5, mb: 1, textAlign: 'center' }}>
-          {DAYS.map(d => (
-            <Typography key={d} variant="caption" fontWeight={600} color="text.secondary">{d}</Typography>
-          ))}
-        </Box>
-
-        {/* Calendar grid */}
-        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 0.5 }}>
-          {Array.from({ length: firstDay }).map((_, i) => <Box key={`empty-${i}`} />)}
-          {Array.from({ length: daysInMonth }).map((_, i) => {
-            const day = i + 1
-            const key = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
-            const isMarked = markedDays[key]
-            const isPredicted = predictedDays.includes(key) && !isMarked
-            const isToday = key === today.toISOString().split('T')[0]
-
-            return (
-              <Box
-                key={day}
-                onClick={() => toggleDay(day)}
-                sx={{
-                  aspectRatio: '1', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  borderRadius: 2, cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem',
-                  bgcolor: isMarked ? '#f72585' : isPredicted ? 'rgba(247,37,133,0.15)' : 'transparent',
-                  color: isMarked ? '#fff' : 'text.primary',
-                  border: isToday ? '2px solid #4361ee' : isMarked || isPredicted ? 'none' : '1px solid transparent',
-                  transition: 'all 0.15s',
-                  '&:hover': { bgcolor: isMarked ? '#d81e68' : isPredicted ? 'rgba(247,37,133,0.25)' : 'rgba(67,97,238,0.06)' },
-                }}
-              >
-                {day}
-              </Box>
-            )
-          })}
-        </Box>
-
-        <Stack direction="row" spacing={1} mt={3} alignItems="center">
-          <Box sx={{ width: 16, height: 16, borderRadius: 1, bgcolor: '#f72585' }} />
-          <Typography variant="caption" color="text.secondary">Marked days</Typography>
-          <Box sx={{ width: 16, height: 16, borderRadius: 1, bgcolor: 'rgba(247,37,133,0.2)', ml: 2 }} />
-          <Typography variant="caption" color="text.secondary">Predicted</Typography>
-          <Box sx={{ flex: 1 }} />
-          <Chip label={`${markedCount} days tracked`} size="small" variant="outlined" />
-        </Stack>
+        {predictions.length > 0 && (
+          <Box>
+            <Typography variant="h6" fontWeight={700} mb={2}>Next Predicted Periods</Typography>
+            <Paper variant="outlined" sx={{ borderRadius: 3, overflow: 'hidden' }}>
+              {predictions.map((d, i) => (
+                <Box key={i} sx={{ p: 2, borderBottom: i < predictions.length - 1 ? '1px solid #e2e8f0' : 'none', display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{ width: 40, height: 40, borderRadius: 2, bgcolor: i === 0 ? '#4361ee' : 'rgba(67,97,238,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: i === 0 ? '#fff' : '#4361ee', fontWeight: 700 }}>
+                    {d.getDate()}
+                  </Box>
+                  <Box flex={1}>
+                    <Typography fontWeight={600}>{formatDate(d)}</Typography>
+                    <Typography variant="caption" color="text.secondary">Prediction {i + 1}</Typography>
+                  </Box>
+                  <Chip label={i === 0 ? 'Next' : `+${cycleLength * (i + 1)}d`} size="small" variant="outlined" />
+                </Box>
+              ))}
+            </Paper>
+          </Box>
+        )}
       </Paper>
     </ToolLayout>
   )

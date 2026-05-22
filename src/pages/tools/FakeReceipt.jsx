@@ -1,66 +1,88 @@
-import { useState, useRef } from 'react'
-import { Typography, Box, Paper, Button, TextField, Stack, Select, MenuItem } from '@mui/material'
-import html2canvas from 'html-to-image'
-import DownloadIcon from '@mui/icons-material/Download'
+import { useState } from 'react'
+import { Typography, Box, Paper, Button, TextField, Stack, IconButton, Snackbar } from '@mui/material'
+import AddIcon from '@mui/icons-material/Add'
+import DeleteIcon from '@mui/icons-material/Delete'
+import FileDownloadIcon from '@mui/icons-material/FileDownload'
 import ToolLayout from '../../components/ToolLayout'
 
 export default function FakeReceipt() {
-  const [store, setStore] = useState('FreshMart')
-  const [items, setItems] = useState([{name:'Organic Milk',price:4.99},{name:'Whole Wheat Bread',price:3.49},{name:'Bananas (6)',price:2.99}])
-  const [newName, setNewName] = useState(''); const [newPrice, setNewPrice] = useState('')
-  const receiptRef = useRef(null)
+  const [storeName, setStoreName] = useState('SuperMart Express')
+  const [date] = useState(new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }))
+  const [items, setItems] = useState([
+    { name: 'Organic Milk', qty: 2, price: 3.99 },
+    { name: 'Sourdough Bread', qty: 1, price: 4.50 },
+    { name: 'Free Range Eggs (12pk)', qty: 1, price: 5.99 },
+    { name: 'Avocado', qty: 3, price: 1.50 },
+    { name: 'Dark Chocolate Bar', qty: 1, price: 2.99 },
+  ])
+  const [newName, setNewName] = useState('')
+  const [newPrice, setNewPrice] = useState('')
 
-  const addItem = () => { if (newName && newPrice) { setItems([...items, {name:newName,price:Number(newPrice)}]); setNewName(''); setNewPrice('') } }
-  const total = items.reduce((sum,i)=>sum+i.price,0).toFixed(2)
-
-  const download = async () => {
-    if (receiptRef.current) {
-      const dataUrl = await html2canvas(receiptRef.current).then(c=>c.toDataURL())
-      const a = document.createElement('a'); a.href=dataUrl; a.download='receipt.png'; a.click()
-    }
+  const addItem = () => {
+    if (!newName.trim() || !newPrice) return
+    setItems([...items, { name: newName, qty: 1, price: parseFloat(newPrice) || 0 }])
+    setNewName(''); setNewPrice('')
   }
 
+  const removeItem = (idx) => setItems(items.filter((_, i) => i !== idx))
+
+  const subtotal = items.reduce((s, i) => s + i.qty * i.price, 0)
+  const tax = subtotal * 0.08875
+  const total = subtotal + tax
+
   return (
-    <ToolLayout title="Fake Receipt Generator" description="Create custom fake receipts for pranks and fun." category="Fun Generators">
-      <Paper sx={{ p: 4, borderRadius: 4 }}>
-        <Stack direction={{ xs:'column',md:'row' }} spacing={4}>
-          <Box flex={1}>
-            <Typography variant="h6" fontWeight={700} mb={2}>Customize</Typography>
-            <TextField label="Store Name" value={store} onChange={e=>setStore(e.target.value)} size="small" fullWidth sx={{mb:2}} />
-            <Stack direction="row" spacing={1} mb={2}>
-              <TextField label="Item" value={newName} onChange={e=>setNewName(e.target.value)} size="small" sx={{flex:1}} />
-              <TextField label="Price" value={newPrice} onChange={e=>setNewPrice(e.target.value)} type="number" size="small" sx={{width:100}} />
-              <Button variant="contained" onClick={addItem}>Add</Button>
-            </Stack>
-            {items.map((item,i) => (
-              <Stack key={i} direction="row" justifyContent="space-between" sx={{p:1,borderBottom:'1px solid #eee'}}>
-                <Typography>{item.name}</Typography>
-                <Typography>${item.price.toFixed(2)}</Typography>
-              </Stack>
+    <ToolLayout title="Fake Receipt Generator" description="Generate custom fake receipts for pranks. Customize store, items, and prices." category="Fun Generators">
+      <Stack spacing={3} direction={{ xs: 'column', md: 'row' }}>
+        {/* Receipt Preview */}
+        <Paper sx={{ p: 0, borderRadius: 3, overflow: 'hidden', flex: 1, bgcolor: '#faf8f5', fontFamily: '"Courier New", monospace', border: '1px dashed #ccc' }}>
+          <Box sx={{ p: 2, textAlign: 'center', borderBottom: '2px dashed #ccc' }}>
+            <Typography variant="h6" sx={{ fontFamily: 'monospace', fontWeight: 700 }}>{storeName}</Typography>
+            <Typography variant="caption" sx={{ fontFamily: 'monospace' }}>123 Main Street, Anytown</Typography>
+            <Typography variant="caption" display="block" sx={{ fontFamily: 'monospace' }}>{date}</Typography>
+          </Box>
+          <Box sx={{ p: 2, borderBottom: '1px dashed #ccc' }}>
+            <Box sx={{ display: 'flex', borderBottom: '1px solid #ddd', pb: 0.5, mb: 1 }}>
+              <Typography variant="caption" fontWeight={700} sx={{ flex: 2, fontFamily: 'monospace' }}>Item</Typography>
+              <Typography variant="caption" fontWeight={700} sx={{ flex: 0.5, textAlign: 'center', fontFamily: 'monospace' }}>Qty</Typography>
+              <Typography variant="caption" fontWeight={700} sx={{ flex: 1, textAlign: 'right', fontFamily: 'monospace' }}>Price</Typography>
+            </Box>
+            {items.map((item, i) => (
+              <Box key={i} sx={{ display: 'flex' }}>
+                <Typography variant="caption" sx={{ flex: 2, fontFamily: 'monospace' }}>{item.name}</Typography>
+                <Typography variant="caption" sx={{ flex: 0.5, textAlign: 'center', fontFamily: 'monospace' }}>{item.qty}</Typography>
+                <Typography variant="caption" sx={{ flex: 1, textAlign: 'right', fontFamily: 'monospace' }}>${(item.qty * item.price).toFixed(2)}</Typography>
+              </Box>
             ))}
-            <Button variant="contained" startIcon={<DownloadIcon />} onClick={download} sx={{mt:3}} fullWidth>Download as Image</Button>
           </Box>
-          <Box flex={1} ref={receiptRef} sx={{ bgcolor:'#fff', p:4, borderRadius:2, border:'2px dashed #ddd', fontFamily:'monospace', minWidth:260 }}>
-            <Typography variant="h6" fontWeight={700} textAlign="center" mb={2}>{store}</Typography>
-            <Typography variant="caption" textAlign="center" display="block" mb={2}>{new Date().toLocaleDateString()}</Typography>
-            <Box sx={{borderTop:'2px dashed #000',pt:2}}>
-              {items.map((item,i) => (
-                <Stack key={i} direction="row" justifyContent="space-between" mb={0.5}>
-                  <Typography variant="body2">{item.name}</Typography>
-                  <Typography variant="body2">${item.price.toFixed(2)}</Typography>
-                </Stack>
-              ))}
-            </Box>
-            <Box sx={{borderTop:'2px solid #000',mt:2,pt:2}}>
-              <Stack direction="row" justifyContent="space-between">
-                <Typography fontWeight={700}>TOTAL</Typography>
-                <Typography fontWeight={700}>${total}</Typography>
-              </Stack>
-            </Box>
-            <Typography variant="caption" textAlign="center" display="block" mt={3}>Thank you for shopping!</Typography>
+          <Box sx={{ p: 2 }}>
+            <Box sx={{ display: 'flex' }}><Typography variant="caption" sx={{ flex: 2, fontFamily: 'monospace' }}>Subtotal</Typography><Typography variant="caption" sx={{ flex: 1, textAlign: 'right', fontFamily: 'monospace' }}>${subtotal.toFixed(2)}</Typography></Box>
+            <Box sx={{ display: 'flex' }}><Typography variant="caption" sx={{ flex: 2, fontFamily: 'monospace' }}>Tax (8.875%)</Typography><Typography variant="caption" sx={{ flex: 1, textAlign: 'right', fontFamily: 'monospace' }}>${tax.toFixed(2)}</Typography></Box>
+            <Box sx={{ display: 'flex', mt: 1, pt: 1, borderTop: '2px solid #333' }}><Typography variant="subtitle2" fontWeight={700} sx={{ flex: 2, fontFamily: 'monospace' }}>TOTAL</Typography><Typography variant="subtitle2" fontWeight={700} sx={{ flex: 1, textAlign: 'right', fontFamily: 'monospace' }}>${total.toFixed(2)}</Typography></Box>
           </Box>
-        </Stack>
-      </Paper>
+          <Box sx={{ p: 2, textAlign: 'center', borderTop: '2px dashed #ccc' }}>
+            <Typography variant="caption" sx={{ fontFamily: 'monospace' }}>Thank you for shopping!</Typography>
+          </Box>
+        </Paper>
+
+        {/* Editor */}
+        <Paper sx={{ p: 3, borderRadius: 4, flex: 0.8 }}>
+          <Typography variant="h6" fontWeight={700} mb={2}>Customize</Typography>
+          <TextField value={storeName} onChange={e => setStoreName(e.target.value)} label="Store Name" size="small" fullWidth sx={{ mb: 3 }} />
+
+          <Stack direction="row" spacing={1} mb={2}>
+            <TextField value={newName} onChange={e => setNewName(e.target.value)} placeholder="Item name" size="small" sx={{ flex: 2 }} />
+            <TextField value={newPrice} onChange={e => setNewPrice(e.target.value)} type="number" placeholder="Price" size="small" sx={{ width: 100 }} />
+            <IconButton color="primary" onClick={addItem} disabled={!newName || !newPrice}><AddIcon /></IconButton>
+          </Stack>
+
+          {items.map((item, i) => (
+            <Box key={i} sx={{ display: 'flex', alignItems: 'center', py: 0.5 }}>
+              <Typography variant="body2" sx={{ flex: 1 }}>{item.name} × {item.qty} (${item.price})</Typography>
+              <IconButton size="small" onClick={() => removeItem(i)}><DeleteIcon fontSize="small" /></IconButton>
+            </Box>
+          ))}
+        </Paper>
+      </Stack>
     </ToolLayout>
   )
 }

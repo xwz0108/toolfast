@@ -1,104 +1,282 @@
-import { useState } from 'react'
-import { Typography, Box, Paper, Button, Chip, Stack, IconButton, Snackbar, Select, MenuItem, FormControl, InputLabel } from '@mui/material'
-import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import DownloadIcon from '@mui/icons-material/Download'
-import ToolLayout from '../../components/ToolLayout'
+import React, { useState, useCallback } from 'react';
+import { Helmet } from 'react-helmet-async';
+import {
+  Box,
+  Typography,
+  Paper,
+  Button,
+  Grid,
+  Card,
+  CardContent,
+  TextField,
+  ToggleButtonGroup,
+  ToggleButton,
+  IconButton,
+  Tooltip,
+  Snackbar,
+  Alert,
+  Divider,
+} from '@mui/material';
+import {
+  ContentCopy as CopyIcon,
+  Refresh as RefreshIcon,
+  Person as PersonIcon,
+  Email as EmailIcon,
+  Phone as PhoneIcon,
+  Home as HomeIcon,
+  Work as WorkIcon,
+  Language as WebIcon,
+  CreditCard as CardIcon,
+} from '@mui/icons-material';
+import ToolLayout from '../../components/ToolLayout';
 
-const FIRST_NAMES = ['Emma','Liam','Olivia','Noah','Ava','James','Sophia','William','Isabella','Oliver','Mia','Benjamin','Charlotte','Elijah','Amelia','Lucas','Harper','Mason','Evelyn','Logan']
-const LAST_NAMES = ['Smith','Johnson','Williams','Brown','Jones','Garcia','Miller','Davis','Rodriguez','Martinez','Anderson','Taylor','Thomas','Moore','Jackson','Martin','Lee','Thompson','White','Clark']
-const STREETS = ['Oak St','Maple Ave','Cedar Ln','Pine Rd','Elm Dr','Birch Ct','Walnut Way','Spruce Pl','Ash Blvd','Willow Cir']
-const CITIES = ['New York','Los Angeles','Chicago','Houston','Phoenix','Philadelphia','San Antonio','San Diego','Dallas','Austin']
-const DOMAINS = ['gmail.com','yahoo.com','outlook.com','hotmail.com','icloud.com','proton.me']
+const FIRST_NAMES_MALE = ['James', 'John', 'Robert', 'Michael', 'William', 'David', 'Richard', 'Joseph', 'Thomas', 'Charles', 'Daniel', 'Matthew', 'Anthony', 'Mark', 'Donald', 'Steven', 'Paul', 'Andrew', 'Joshua', 'Kenneth', 'Kevin', 'Brian', 'George', 'Edward', 'Ronald'];
+const FIRST_NAMES_FEMALE = ['Mary', 'Patricia', 'Jennifer', 'Linda', 'Barbara', 'Elizabeth', 'Susan', 'Jessica', 'Sarah', 'Karen', 'Nancy', 'Lisa', 'Betty', 'Margaret', 'Sandra', 'Ashley', 'Dorothy', 'Kimberly', 'Emily', 'Donna', 'Michelle', 'Carol', 'Amanda', 'Melissa', 'Deborah'];
+const LAST_NAMES = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin', 'Lee', 'Perez', 'Thompson', 'White', 'Harris'];
 
-function random(arr) { return arr[Math.floor(Math.random() * arr.length)] }
-function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min }
+const STREETS = ['Main St', 'Oak Ave', 'Maple Dr', 'Cedar Ln', 'Pine Rd', 'Elm St', 'Washington Blvd', 'Park Ave', 'Lake Dr', 'Hill Rd', 'Sunset Blvd', 'Broadway', 'River Rd', 'Forest Ave', 'Meadow Ln'];
+const CITIES = ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix', 'Philadelphia', 'San Antonio', 'San Diego', 'Dallas', 'Austin', 'Jacksonville', 'San Jose', 'Fort Worth', 'Columbus', 'Charlotte'];
+const STATES = ['NY', 'CA', 'IL', 'TX', 'AZ', 'PA', 'FL', 'OH', 'NC', 'MI', 'GA', 'WA', 'CO', 'MA', 'VA'];
+const DOMAINS = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'icloud.com', 'protonmail.com', 'aol.com', 'mail.com'];
 
-function generatePerson() { const fn=random(FIRST_NAMES); const ln=random(LAST_NAMES); return { type:'Person', data: { firstName:fn, lastName:ln, fullName:`${fn} ${ln}`, email:`${fn.toLowerCase()}.${ln.toLowerCase()}${randInt(1,999)}@${random(DOMAINS)}`, phone:`+1 (${randInt(200,999)}) ${randInt(100,999)}-${randInt(1000,9999)}`, age:randInt(18,75) } } }
-function generateAddress() { return { type:'Address', data: { street:`${randInt(100,9999)} ${random(STREETS)}`, city:random(CITIES), state:random(['CA','TX','NY','FL','IL','PA','OH','GA','NC','MI']), zip:randInt(10000,99999).toString(), country:'United States' } } }
-function generateInternet() { const fn=random(FIRST_NAMES).toLowerCase(); return { type:'Internet', data: { username:`${fn}${random(['_','.',''])}${random(['42','007','x','pro','_dev'])}`, email:`${fn}${randInt(1,999)}@${random(DOMAINS)}`, password:`${random(['Password','Welcome','Hello'])}${randInt(1,999)}!`, ip:`${randInt(1,255)}.${randInt(1,255)}.${randInt(1,255)}.${randInt(1,255)}`, userAgent:'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' } } }
-function generateCompany() { const names=['Acme','Globex','Initech','Umbrella','Soylent','Cyberdyne','Wonka','Stark','Wayne','Oscorp']; return { type:'Company', data: { name:`${random(names)} ${random(['Corp','Inc','LLC','Industries','Group'])}`, catchPhrase:`${random(['Revolutionary','Innovative','Next-gen','Disruptive'])} ${random(['solutions','platforms','systems','services'])}`, bs:`${random(['synergize','leverage','optimize','scale'])} ${random(['B2B','B2C','cross-platform','end-to-end'])} ${random(['synergies','ROI','solutions','deliverables'])}` } } }
+const randomItem = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+const randomBool = () => Math.random() > 0.5;
+const pad = (n, len) => String(n).padStart(len, '0');
 
-const generators = { Person: generatePerson, Address: generateAddress, Internet: generateInternet, Company: generateCompany }
+const generators = {
+  name: () => {
+    const firstName = randomItem(randomBool() ? FIRST_NAMES_MALE : FIRST_NAMES_FEMALE);
+    const lastName = randomItem(LAST_NAMES);
+    return `${firstName} ${lastName}`;
+  },
+  firstName: () => randomItem(randomBool() ? FIRST_NAMES_MALE : FIRST_NAMES_FEMALE),
+  lastName: () => randomItem(LAST_NAMES),
+  email: () => {
+    const firstName = randomItem(randomBool() ? FIRST_NAMES_MALE : FIRST_NAMES_FEMALE);
+    const lastName = randomItem(LAST_NAMES);
+    const sep = randomItem(['.', '_', '']);
+    const num = Math.random() > 0.7 ? randomInt(1, 999) : '';
+    return `${firstName.toLowerCase()}${sep}${lastName.toLowerCase()}${num}@${randomItem(DOMAINS)}`;
+  },
+  phone: () => {
+    const area = randomInt(200, 999);
+    const prefix = randomInt(200, 999);
+    const line = randomInt(1000, 9999);
+    return `(${area}) ${prefix}-${line}`;
+  },
+  address: () => {
+    const num = randomInt(100, 9999);
+    return `${num} ${randomItem(STREETS)}, ${randomItem(CITIES)}, ${randomItem(STATES)} ${pad(randomInt(1, 99999), 5)}`;
+  },
+  zipCode: () => pad(randomInt(10000, 99999), 5),
+  city: () => randomItem(CITIES),
+  state: () => randomItem(STATES),
+  company: () => {
+    const prefixes = ['Tech', 'Global', 'United', 'American', 'National', 'Pacific', 'Atlantic', 'Summit', 'Pinnacle', 'Apex', 'Nova', 'Quantum', 'Vertex', 'Horizon', 'Prime'];
+    const suffixes = ['Corporation', 'Industries', 'Group', 'Solutions', 'Technologies', 'Enterprises', 'Holdings', 'Partners', 'Systems', 'Dynamics'];
+    return `${randomItem(prefixes)} ${randomItem(suffixes)}`;
+  },
+  jobTitle: () => {
+    const titles = ['Software Engineer', 'Product Manager', 'Data Scientist', 'Marketing Director', 'Sales Manager', 'Financial Analyst', 'HR Specialist', 'Operations Manager', 'UX Designer', 'DevOps Engineer', 'Business Analyst', 'Project Manager', 'Account Executive', 'Research Scientist', 'Creative Director'];
+    return randomItem(titles);
+  },
+  website: () => {
+    const words = ['tech', 'global', 'digital', 'cloud', 'data', 'web', 'app', 'smart', 'next', 'future', 'prime', 'nova', 'apex', 'core', 'hub'];
+    const tlds = ['.com', '.io', '.co', '.net', '.org', '.app', '.tech'];
+    return `https://www.${randomItem(words)}${randomItem(words)}${randomItem(tlds)}`;
+  },
+  creditCard: () => {
+    return `${pad(randomInt(1000, 9999), 4)} ${pad(randomInt(1000, 9999), 4)} ${pad(randomInt(1000, 9999), 4)} ${pad(randomInt(1000, 9999), 4)}`;
+  },
+  username: () => {
+    const adj = ['cool', 'super', 'mega', 'ultra', 'epic', 'wild', 'dark', 'gold', 'blue', 'red'];
+    const noun = ['wolf', 'eagle', 'tiger', 'dragon', 'phoenix', 'ninja', 'pirate', 'knight', 'wizard', 'hero'];
+    return `${randomItem(adj)}_${randomItem(noun)}${randomInt(1, 999)}`;
+  },
+  ssn: () => `${pad(randomInt(100, 999), 3)}-${pad(randomInt(10, 99), 2)}-${pad(randomInt(1000, 9999), 4)}`,
+  ipv4: () => `${randomInt(1, 255)}.${randomInt(0, 255)}.${randomInt(0, 255)}.${randomInt(1, 254)}`,
+  color: () => `#${pad(randomInt(0, 0xFFFFFF).toString(16), 6)}`,
+  uuid: () => {
+    const hex = '0123456789abcdef';
+    const gen = (n) => Array.from({ length: n }, () => hex[randomInt(0, 15)]).join('');
+    return `${gen(8)}-${gen(4)}-4${gen(3)}-${randomItem('89ab')}${gen(3)}-${gen(12)}`;
+  },
+};
 
-export default function FakeData() {
-  const [category, setCategory] = useState('Person')
-  const [count, setCount] = useState(5)
-  const [results, setResults] = useState([])
-  const [snack, setSnack] = useState(false)
+const typeMeta = {
+  name: { icon: <PersonIcon />, label: '姓名' },
+  firstName: { icon: <PersonIcon />, label: '名' },
+  lastName: { icon: <PersonIcon />, label: '姓' },
+  email: { icon: <EmailIcon />, label: '邮箱' },
+  phone: { icon: <PhoneIcon />, label: '电话' },
+  address: { icon: <HomeIcon />, label: '地址' },
+  zipCode: { icon: <HomeIcon />, label: '邮编' },
+  city: { icon: <HomeIcon />, label: '城市' },
+  state: { icon: <HomeIcon />, label: '州' },
+  company: { icon: <WorkIcon />, label: '公司' },
+  jobTitle: { icon: <WorkIcon />, label: '职位' },
+  website: { icon: <WebIcon />, label: '网站' },
+  creditCard: { icon: <CardIcon />, label: '信用卡号' },
+  username: { icon: <PersonIcon />, label: '用户名' },
+  ssn: { icon: <PersonIcon />, label: 'SSN' },
+  ipv4: { icon: <WebIcon />, label: 'IPv4' },
+  color: { icon: <WebIcon />, label: '颜色' },
+  uuid: { icon: <WebIcon />, label: 'UUID' },
+};
 
-  const generate = () => {
-    const gen = generators[category]
-    const data = Array.from({ length: count }, () => gen().data)
-    setResults(data)
-  }
+const FakeData = () => {
+  const [selectedType, setSelectedType] = useState('name');
+  const [count, setCount] = useState(5);
+  const [data, setData] = useState([]);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '' });
 
-  const exportCSV = () => {
-    if (results.length === 0) return
-    const keys = Object.keys(results[0])
-    const csv = [keys.join(','), ...results.map(r => keys.map(k => JSON.stringify(r[k] || '')).join(','))].join('\n')
-    const blob = new Blob([csv], { type: 'text/csv' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a'); a.href = url; a.download = 'fake-data.csv'; a.click()
-  }
+  const generate = useCallback(() => {
+    const results = [];
+    for (let i = 0; i < count; i++) {
+      results.push(generators[selectedType]());
+    }
+    setData(results);
+  }, [selectedType, count]);
 
-  const exportJSON = () => {
-    const blob = new Blob([JSON.stringify(results, null, 2)], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a'); a.href = url; a.download = 'fake-data.json'; a.click()
-  }
+  const handleCopy = (text) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setSnackbar({ open: true, message: '已复制到剪贴板' });
+    });
+  };
+
+  const handleCopyAll = () => {
+    navigator.clipboard.writeText(data.join('\n')).then(() => {
+      setSnackbar({ open: true, message: `已复制 ${data.length} 条数据` });
+    });
+  };
+
+  const typeKeys = Object.keys(generators);
 
   return (
-    <ToolLayout title="Fake Data Generator" description="Generate realistic fake data for testing and development. Export as JSON or CSV." category="Text Fun">
-      <Paper sx={{ p: 4, borderRadius: 4 }}>
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} mb={3} alignItems="center">
-          <FormControl size="small" sx={{ minWidth: 150 }}>
-            <InputLabel>Category</InputLabel>
-            <Select value={category} onChange={e => { setCategory(e.target.value); setResults([]) }} label="Category">
-              {Object.keys(generators).map(k => <MenuItem key={k} value={k}>{k}</MenuItem>)}
-            </Select>
-          </FormControl>
-          <FormControl size="small" sx={{ minWidth: 120 }}>
-            <InputLabel>Count</InputLabel>
-            <Select value={count} onChange={e => { setCount(e.target.value); setResults([]) }} label="Count">
-              {[1,5,10,20,50].map(n => <MenuItem key={n} value={n}>{n}</MenuItem>)}
-            </Select>
-          </FormControl>
-          <Button variant="contained" onClick={generate} sx={{ px: 4 }}>Generate</Button>
-        </Stack>
+    <>
+      <Helmet>
+        <title>Fake Data Generator - ToolFast</title>
+        <meta name="description" content="Generate fake names, emails, addresses, phone numbers, and more." />
+      </Helmet>
 
-        {results.length > 0 && (
-          <>
-            <Box sx={{ mb: 2, display: 'flex', gap: 1 }}>
-              <Button variant="outlined" size="small" startIcon={<DownloadIcon />} onClick={exportJSON}>JSON</Button>
-              <Button variant="outlined" size="small" startIcon={<DownloadIcon />} onClick={exportCSV}>CSV</Button>
+      <ToolLayout title="Fake Data Generator" description="生成随机虚假数据，用于测试和开发">
+        <Box sx={{ maxWidth: 900, mx: 'auto' }}>
+          <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              数据类型
+            </Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
+              {typeKeys.map((key) => (
+                <Button
+                  key={key}
+                  variant={selectedType === key ? 'contained' : 'outlined'}
+                  size="small"
+                  onClick={() => { setSelectedType(key); setData([]); }}
+                  startIcon={typeMeta[key]?.icon}
+                >
+                  {typeMeta[key]?.label || key}
+                </Button>
+              ))}
             </Box>
-            <Paper variant="outlined" sx={{ borderRadius: 3, overflow: 'auto', maxHeight: 500 }}>
-              <Box component="table" sx={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
-                <Box component="thead">
-                  <Box component="tr" sx={{ bgcolor: '#f8fafc' }}>
-                    {Object.keys(results[0]).map(k => (
-                      <Box key={k} component="th" sx={{ p: 1.5, textAlign: 'left', borderBottom: '2px solid #e2e8f0', fontWeight: 700, color: 'text.secondary' }}>
-                        {k}
-                      </Box>
-                    ))}
-                  </Box>
-                </Box>
-                <Box component="tbody">
-                  {results.map((row, i) => (
-                    <Box key={i} component="tr" sx={{ '&:hover': { bgcolor: 'rgba(67,97,238,0.02)' } }}>
-                      {Object.values(row).map((val, j) => (
-                        <Box key={j} component="td" sx={{ p: 1.5, borderBottom: '1px solid #f1f5f9' }}>
-                          {typeof val === 'string' ? val : JSON.stringify(val)}
-                        </Box>
-                      ))}
+
+            <Divider sx={{ my: 2 }} />
+
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={6} sm={3}>
+                <TextField
+                  label="生成数量"
+                  type="number"
+                  value={count}
+                  onChange={(e) => setCount(Math.max(1, Math.min(100, Number(e.target.value))))}
+                  fullWidth
+                  inputProps={{ min: 1, max: 100 }}
+                />
+              </Grid>
+              <Grid item xs={6} sm={3}>
+                <Button
+                  variant="contained"
+                  onClick={generate}
+                  fullWidth
+                  startIcon={<RefreshIcon />}
+                >
+                  生成
+                </Button>
+              </Grid>
+              {data.length > 0 && (
+                <Grid item xs={12} sm={6} sx={{ textAlign: { sm: 'right' } }}>
+                  <Button
+                    variant="outlined"
+                    onClick={handleCopyAll}
+                    startIcon={<CopyIcon />}
+                  >
+                    复制全部
+                  </Button>
+                </Grid>
+              )}
+            </Grid>
+          </Paper>
+
+          {data.length > 0 && (
+            <Paper elevation={1} sx={{ p: 2 }}>
+              <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                {typeMeta[selectedType]?.label || selectedType} &times; {data.length}
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                {data.map((item, idx) => (
+                  <Paper
+                    key={idx}
+                    variant="outlined"
+                    sx={{
+                      p: 1.5,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      '&:hover': { bgcolor: 'action.hover' },
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Typography variant="caption" color="text.secondary" sx={{ minWidth: 30 }}>
+                        #{idx + 1}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        fontFamily="monospace"
+                        sx={{
+                          color: selectedType === 'color' ? item : 'inherit',
+                          bgcolor: selectedType === 'color' ? item : 'transparent',
+                          px: selectedType === 'color' ? 1 : 0,
+                          borderRadius: selectedType === 'color' ? 0.5 : 0,
+                        }}
+                      >
+                        {item}
+                      </Typography>
                     </Box>
-                  ))}
-                </Box>
+                    <Tooltip title="复制">
+                      <IconButton size="small" onClick={() => handleCopy(item)}>
+                        <CopyIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </Paper>
+                ))}
               </Box>
             </Paper>
-          </>
-        )}
-      </Paper>
-    </ToolLayout>
-  )
-}
+          )}
+        </Box>
+
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={2000}
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        >
+          <Alert severity="success" variant="filled" sx={{ width: '100%' }}>
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
+      </ToolLayout>
+    </>
+  );
+};
+
+export default FakeData;

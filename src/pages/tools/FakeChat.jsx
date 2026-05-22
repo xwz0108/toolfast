@@ -1,93 +1,67 @@
 import { useState } from 'react'
-import { Typography, Box, Paper, TextField, Button, IconButton, Stack, Chip, Snackbar } from '@mui/material'
+import { Typography, Box, Paper, Button, TextField, Stack, Chip, IconButton, Snackbar } from '@mui/material'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import AddIcon from '@mui/icons-material/Add'
-import DeleteIcon from '@mui/icons-material/Delete'
 import ToolLayout from '../../components/ToolLayout'
 
-const COLORS = ['#4361ee', '#2ecc71', '#e74c3c', '#f39c12', '#9b59b6', '#1abc9c', '#e91e63']
+const DEFAULT_MESSAGES = [
+  { sender: 'Alex', text: 'Hey! Are you coming to the party tonight?', side: 'left', color: '#4361ee' },
+  { sender: 'You', text: 'Yeah absolutely! What time does it start?', side: 'right', color: '#2ecc71' },
+  { sender: 'Alex', text: 'Around 8pm. Bring snacks if you can! 🎉', side: 'left', color: '#4361ee' },
+  { sender: 'You', text: 'Will do! See you there 🙌', side: 'right', color: '#2ecc71' },
+]
 
 export default function FakeChat() {
-  const [userName, setUserName] = useState('You')
-  const [otherName, setOtherName] = useState('Friend')
-  const [messages, setMessages] = useState([
-    { sender: 'other', text: 'Hey! How are you?', time: '10:30 AM' },
-    { sender: 'user', text: 'I am doing great! Just using this awesome tool.', time: '10:31 AM' },
-    { sender: 'other', text: 'That sounds fun! Can you customize the messages?', time: '10:32 AM' },
-    { sender: 'user', text: 'Absolutely! Add, edit, delete any message you want.', time: '10:33 AM' },
-  ])
-  const [newMsg, setNewMsg] = useState('')
-  const [msgSide, setMsgSide] = useState('user')
+  const [messages, setMessages] = useState(DEFAULT_MESSAGES)
+  const [newSender, setNewSender] = useState('Alex')
+  const [newText, setNewText] = useState('')
   const [snack, setSnack] = useState(false)
 
-  const addMessage = () => {
-    if (!newMsg.trim()) return
-    const now = new Date()
-    const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    setMessages([...messages, { sender: msgSide, text: newMsg.trim(), time }])
-    setNewMsg('')
+  const addMessage = (side) => {
+    if (!newText.trim()) return
+    setMessages([...messages, {
+      sender: side === 'right' ? 'You' : newSender || 'Friend',
+      text: newText, side, color: side === 'right' ? '#2ecc71' : '#4361ee',
+    }])
+    setNewText('')
   }
 
   const removeMsg = (idx) => setMessages(messages.filter((_, i) => i !== idx))
 
   return (
-    <ToolLayout title="Fake Chat Generator" description="Create realistic fake messaging screenshots. Customize names, messages, and share." category="Fun Generators">
-      <Paper sx={{ p: 4, borderRadius: 4 }}>
-        <Stack direction="row" spacing={2} mb={3}>
-          <TextField value={userName} onChange={e => setUserName(e.target.value)} label="Your Name" size="small" sx={{ flex: 1 }} />
-          <TextField value={otherName} onChange={e => setOtherName(e.target.value)} label="Other Name" size="small" sx={{ flex: 1 }} />
-        </Stack>
-
-        {/* Phone mockup */}
-        <Paper variant="outlined" sx={{ p: 2, borderRadius: 4, bgcolor: '#f0f4f8', maxWidth: 360, mx: 'auto', mb: 3, maxHeight: 500, overflow: 'auto' }}>
-          {/* Header */}
-          <Box sx={{ textAlign: 'center', pb: 2, mb: 2, borderBottom: '1px solid #e2e8f0' }}>
-            <Box sx={{ width: 40, height: 40, borderRadius: '50%', bgcolor: COLORS[0], mx: 'auto', mb: 0.5, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700 }}>
-              {otherName[0]}
-            </Box>
-            <Typography variant="subtitle2" fontWeight={700}>{otherName}</Typography>
-            <Typography variant="caption" color="text.secondary">Online</Typography>
-          </Box>
-
-          {/* Messages */}
+    <ToolLayout title="Fake Chat Generator" description="Create realistic fake messaging screenshots. Customize avatars, messages, and share." category="Fun Generators">
+      <Stack spacing={3}>
+        {/* Chat Preview */}
+        <Paper sx={{ p: 2, borderRadius: 4, bgcolor: '#f0f0f5', maxWidth: 400, mx: 'auto', minHeight: 300, maxHeight: 500, overflow: 'auto' }}>
           {messages.map((msg, i) => (
-            <Box key={i} sx={{ mb: 1.5, display: 'flex', flexDirection: 'column', alignItems: msg.sender === 'user' ? 'flex-end' : 'flex-start' }}>
-              <Typography variant="caption" fontWeight={600} sx={{ ml: 1, mr: 1 }}>
-                {msg.sender === 'user' ? userName : otherName}
-              </Typography>
-              <Box sx={{ position: 'relative', display: 'inline-block' }}>
-                <Paper
-                  sx={{
-                    px: 2, py: 1, maxWidth: 240,
-                    bgcolor: msg.sender === 'user' ? '#4361ee' : '#fff',
-                    color: msg.sender === 'user' ? '#fff' : '#1a1a2e',
-                    borderRadius: msg.sender === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
-                  }}
-                >
-                  <Typography variant="body2">{msg.text}</Typography>
+            <Box key={i} sx={{ display: 'flex', flexDirection: msg.side === 'right' ? 'row-reverse' : 'row', mb: 1.5, gap: 1 }}>
+              <Box sx={{ width: 32, height: 32, borderRadius: '50%', bgcolor: msg.color, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '0.75rem', fontWeight: 700, flexShrink: 0 }}>
+                {msg.sender[0]}
+              </Box>
+              <Box>
+                <Typography variant="caption" fontWeight={700} color="text.secondary">{msg.sender}</Typography>
+                <Paper sx={{ p: 1.5, borderRadius: msg.side === 'right' ? '16px 16px 4px 16px' : '16px 16px 16px 4px', bgcolor: 'white', maxWidth: 240, fontSize: '0.9rem' }}>
+                  {msg.text}
                 </Paper>
-                <Typography variant="caption" sx={{ display: 'block', mt: 0.3, color: 'text.secondary', textAlign: msg.sender === 'user' ? 'right' : 'left', px: 1 }}>
-                  {msg.time}
-                </Typography>
-                <IconButton size="small" onClick={() => removeMsg(i)} sx={{ position: 'absolute', top: -8, right: -8, bgcolor: '#fff', boxShadow: 1, width: 20, height: 20 }}>
-                  <DeleteIcon sx={{ fontSize: 12 }} />
-                </IconButton>
+                <IconButton size="small" onClick={() => removeMsg(i)} sx={{ visibility: 'hidden', '.MuiPaper-root:hover &': { visibility: 'visible' } }}>×</IconButton>
               </Box>
             </Box>
           ))}
         </Paper>
 
-        <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-          <Stack direction="row" spacing={0.5}>
-            {['user', 'other'].map(s => (
-              <Chip key={s} label={s === 'user' ? userName : otherName} onClick={() => setMsgSide(s)} color={msgSide === s ? 'primary' : 'default'} size="small" />
-            ))}
+        {/* Editor */}
+        <Paper sx={{ p: 3, borderRadius: 4 }}>
+          <Typography variant="h6" fontWeight={700} mb={2}>Add Message</Typography>
+          <Stack direction="row" spacing={1} mb={2}>
+            <TextField value={newSender} onChange={e => setNewSender(e.target.value)} label="Sender Name" size="small" sx={{ flex: 1 }} />
           </Stack>
-          <TextField value={newMsg} onChange={e => setNewMsg(e.target.value)} placeholder="Type a message..." size="small" sx={{ flex: 1 }} onKeyDown={e => e.key === 'Enter' && addMessage()} />
-          <IconButton onClick={addMessage} color="primary"><AddIcon /></IconButton>
-        </Box>
-      </Paper>
-      <Snackbar open={snack} autoHideDuration={1500} onClose={() => setSnack(false)} message="Copied" />
+          <TextField value={newText} onChange={e => setNewText(e.target.value)} placeholder="Message text..." fullWidth multiline rows={2} size="small" sx={{ mb: 2 }} />
+          <Stack direction="row" spacing={1}>
+            <Button variant="outlined" onClick={() => addMessage('left')} sx={{ flex: 1 }}>Add Left</Button>
+            <Button variant="outlined" onClick={() => addMessage('right')} sx={{ flex: 1 }}>Add Right</Button>
+            <Button variant="contained" onClick={() => { setMessages(DEFAULT_MESSAGES) }} size="small">Reset</Button>
+          </Stack>
+        </Paper>
+      </Stack>
     </ToolLayout>
   )
 }
