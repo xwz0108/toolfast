@@ -12,7 +12,7 @@ import SpeedIcon from '@mui/icons-material/Speed'
 import { motion, AnimatePresence } from 'framer-motion'
 import tools from '../data/tools.json'
 
-const categories = ['All', 'Decision & Random', 'Creative', 'Mini Games', 'Life Calculators', 'Text Fun', 'Fun Generators']
+const categories = ['All', 'Decision & Random', 'Creative', 'Mini Games', 'Life Calculators', 'Text Fun', 'Fun Generators', 'Developer Tools']
 
 const categoryColors = {
   'Decision & Random': { gradient: 'linear-gradient(135deg, #7c3aed, #a78bfa)', glow: 'rgba(124,58,237,0.15)', icon: '🎲' },
@@ -21,6 +21,7 @@ const categoryColors = {
   'Life Calculators': { gradient: 'linear-gradient(135deg, #2563eb, #60a5fa)', glow: 'rgba(96,165,250,0.15)', icon: '🧮' },
   'Text Fun': { gradient: 'linear-gradient(135deg, #db2777, #f472b6)', glow: 'rgba(244,114,182,0.15)', icon: '📝' },
   'Fun Generators': { gradient: 'linear-gradient(135deg, #ca8a04, #eab308)', glow: 'rgba(234,179,8,0.15)', icon: '🎁' },
+  'Developer Tools': { gradient: 'linear-gradient(135deg, #00d2ff, #3a7bd5)', glow: 'rgba(0,210,255,0.15)', icon: '🛠️' },
 }
 
 const fadeUp = { initial: { opacity: 0, y: 30 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: '-50px' }, transition: { duration: 0.5 } }

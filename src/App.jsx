@@ -36,6 +36,14 @@ const PeriodTracker = lazy(() => import('./pages/tools/PeriodTracker'))
 const MemeMaker = lazy(() => import('./pages/tools/MemeMaker'))
 const FakeChat = lazy(() => import('./pages/tools/FakeChat'))
 const FakeReceipt = lazy(() => import('./pages/tools/FakeReceipt'))
+const SQLFormatter = lazy(() => import('./pages/tools/SQLFormatter'))
+const MermaidEditor = lazy(() => import('./pages/tools/MermaidEditor'))
+const CronVisualizer = lazy(() => import('./pages/tools/CronVisualizer'))
+const JWTDecoder = lazy(() => import('./pages/tools/JWTDecoder'))
+const HTTPHeaders = lazy(() => import('./pages/tools/HTTPHeaders'))
+const RegexVisualizer = lazy(() => import('./pages/tools/RegexVisualizer'))
+const BrowserFingerprint = lazy(() => import('./pages/tools/BrowserFingerprint'))
+const IPCalculator = lazy(() => import('./pages/tools/IPCalculator'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 
 const theme = createTheme({
@@ -167,6 +175,14 @@ export default function App() {
                 <Route path="/tools/meme-maker" element={<MemeMaker />} />
                 <Route path="/tools/fake-chat" element={<FakeChat />} />
                 <Route path="/tools/fake-receipt" element={<FakeReceipt />} />
+                <Route path="/tools/sql-formatter" element={<SQLFormatter />} />
+                <Route path="/tools/mermaid-editor" element={<MermaidEditor />} />
+                <Route path="/tools/cron-visualizer" element={<CronVisualizer />} />
+                <Route path="/tools/jwt-decoder" element={<JWTDecoder />} />
+                <Route path="/tools/http-headers" element={<HTTPHeaders />} />
+                <Route path="/tools/regex-visualizer" element={<RegexVisualizer />} />
+                <Route path="/tools/browser-fingerprint" element={<BrowserFingerprint />} />
+                <Route path="/tools/ip-calculator" element={<IPCalculator />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
