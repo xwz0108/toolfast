@@ -40,32 +40,78 @@ const NotFound = lazy(() => import('./pages/NotFound'))
 
 const theme = createTheme({
   palette: {
-    mode: 'light',
-    primary: { main: '#4361ee' },
-    secondary: { main: '#f72585' },
-    background: { default: '#fafbfc', paper: '#ffffff' },
-    text: { primary: '#1a1a2e', secondary: '#64748b' },
+    mode: 'dark',
+    primary: { main: '#a78bfa' },
+    secondary: { main: '#fb923c' },
+    background: { default: '#0a0a14', paper: '#14141f' },
+    text: { primary: '#e8e6f0', secondary: '#8b8fa8' },
   },
   typography: {
-    fontFamily: '"Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif',
-    h1: { fontWeight: 800, letterSpacing: '-0.03em' },
-    h2: { fontWeight: 700, letterSpacing: '-0.02em' },
-    h3: { fontWeight: 700, letterSpacing: '-0.01em' },
-    h4: { fontWeight: 600 },
-    body1: { lineHeight: 1.7, color: '#475569' },
+    fontFamily: '"Space Grotesk", "Plus Jakarta Sans", system-ui, sans-serif',
+    h1: { fontWeight: 700, letterSpacing: '-0.04em', fontSize: '3.5rem' },
+    h2: { fontWeight: 700, letterSpacing: '-0.03em' },
+    h3: { fontWeight: 700, letterSpacing: '-0.02em' },
+    h4: { fontWeight: 600, letterSpacing: '-0.01em' },
+    body1: { lineHeight: 1.7, color: '#a0a4b8' },
     button: { textTransform: 'none', fontWeight: 600 },
   },
-  shape: { borderRadius: 16 },
+  shape: { borderRadius: 18 },
   components: {
+    MuiCssBaseline: {
+      styleOverrides: `
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+      `,
+    },
     MuiButton: {
       styleOverrides: {
-        root: { borderRadius: 12, padding: '10px 24px', fontSize: '0.95rem' },
-        contained: { boxShadow: 'none', '&:hover': { boxShadow: '0 4px 20px rgba(67,97,238,0.3)' } },
+        root: { borderRadius: 14, padding: '12px 28px', fontSize: '0.95rem', letterSpacing: '-0.01em' },
+        contained: {
+          background: 'linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%)',
+          boxShadow: '0 4px 24px rgba(124,58,237,0.25)',
+          '&:hover': { background: 'linear-gradient(135deg, #6d28d9 0%, #8b5cf6 100%)', boxShadow: '0 8px 32px rgba(124,58,237,0.35)' },
+        },
+        outlined: { borderColor: 'rgba(167,139,250,0.3)', color: '#a78bfa', '&:hover': { borderColor: '#a78bfa', background: 'rgba(167,139,250,0.08)' } },
       },
     },
     MuiCard: {
       styleOverrides: {
-        root: { borderRadius: 20, boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid #e2e8f0' },
+        root: {
+          borderRadius: 22,
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(255,255,255,0.06)',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.2)',
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: { borderRadius: 10 },
+        filled: { background: 'rgba(167,139,250,0.12)', color: '#c4b5fd' },
+        outlined: { borderColor: 'rgba(255,255,255,0.08)', color: '#8b8fa8' },
+      },
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .MuiOutlinedInput-root': {
+            borderRadius: 14,
+            background: 'rgba(255,255,255,0.04)',
+            '& fieldset': { borderColor: 'rgba(255,255,255,0.08)' },
+            '&:hover fieldset': { borderColor: 'rgba(167,139,250,0.3)' },
+            '&.Mui-focused fieldset': { borderColor: '#a78bfa' },
+          },
+        },
+      },
+    },
+    MuiTabs: {
+      styleOverrides: {
+        indicator: { background: 'linear-gradient(90deg, #7c3aed, #a78bfa)', height: 3, borderRadius: 3 },
+      },
+    },
+    MuiTab: {
+      styleOverrides: {
+        root: { color: '#8b8fa8', '&.Mui-selected': { color: '#c4b5fd' } },
       },
     },
   },
@@ -73,8 +119,8 @@ const theme = createTheme({
 
 function ToolSkeleton() {
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-      <div style={{ width: 40, height: 40, borderRadius: '50%', border: '3px solid #e2e8f0', borderTopColor: '#4361ee', animation: 'spin 0.8s linear infinite' }} />
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh', background: '#0a0a14' }}>
+      <div style={{ width: 48, height: 48, borderRadius: '50%', border: '3px solid rgba(167,139,250,0.15)', borderTopColor: '#a78bfa', animation: 'spin 0.8s linear infinite' }} />
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   )
