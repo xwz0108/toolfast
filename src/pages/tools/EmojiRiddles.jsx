@@ -1,99 +1,89 @@
-import { useState } from 'react'
-import { Typography, Box, Paper, Button, TextField, Chip } from '@mui/material'
-import ShuffleIcon from '@mui/icons-material/Shuffle'
+import { useState, useEffect } from 'react'
+import { Typography, Box, Paper, Button, TextField, Stack, Chip, LinearProgress } from '@mui/material'
 import ToolLayout from '../../components/ToolLayout'
 
 const PUZZLES = [
-  { emoji: '🍎📱', answer: 'iPhone' },
-  { emoji: '🧊🧸', answer: 'Ice Bear' },
-  { emoji: '🔥🐶', answer: 'Hot Dog' },
-  { emoji: '🌙🌙', answer: 'Twice' },
-  { emoji: '🕷️🧑', answer: 'Spiderman' },
-  { emoji: '🤴🦁', answer: 'Lion King' },
-  { emoji: '⚡🧑', answer: 'Flash' },
-  { emoji: '🌧️🌧️', answer: 'Rain' },
-  { emoji: '👻🏡', answer: 'Haunted House' },
-  { emoji: '🦇🧑', answer: 'Batman' },
-  { emoji: '⭐⭐', answer: 'Starlight' },
-  { emoji: '😴💤', answer: 'Sleepy' },
-  { emoji: '📚🐛', answer: 'Bookworm' },
-  { emoji: '🦈🌪️', answer: 'Sharknado' },
-  { emoji: '👁️🐯', answer: 'Eye of the Tiger' },
-  { emoji: '🕰️💣', answer: 'Time Bomb' },
-  { emoji: '🥜🧈', answer: 'Peanut Butter' },
-  { emoji: '🐝🐝', answer: 'Spelling Bee' },
-  { emoji: '🌍🔥', answer: 'Global Warming' },
-  { emoji: '💎💍', answer: 'Diamond Ring' },
+  { e: '🌧️🐱🐶', a: 'Raining Cats and Dogs', h: 'Weather idiom' },
+  { e: '🍎👁️', a: 'Apple of My Eye', h: 'Something precious' },
+  { e: '🔨⏰', a: 'Hammer Time', h: 'MC Hammer' },
+  { e: '🔥💡', a: 'Lightbulb Moment', h: 'Sudden idea' },
+  { e: '🐝🦵', a: 'Busy Bee', h: 'Hard worker' },
+  { e: '📖🐛', a: 'Bookworm', h: 'Loves reading' },
+  { e: '🎂🕯️', a: 'Birthday Cake', h: 'Celebration' },
+  { e: '💔', a: 'Heartbreak', h: 'Sadness' },
+  { e: '🧊☕', a: 'Iced Coffee', h: 'Chilled drink' },
+  { e: '👻🏠', a: 'Haunted House', h: 'Spooky' },
+  { e: '🐟🌊', a: 'Big Fish', h: 'Important person' },
+  { e: '⭐🎬', a: 'Movie Star', h: 'Celebrity' },
 ]
 
 export default function EmojiRiddles() {
-  const [current, setCurrent] = useState(0)
-  const [guess, setGuess] = useState('')
+  const [current, setCurrent] = useState(null)
+  const [input, setInput] = useState('')
   const [score, setScore] = useState(0)
-  const [attempts, setAttempts] = useState(0)
-  const [result, setResult] = useState(null) // 'correct' | 'wrong' | null
+  const [round, setRound] = useState(0)
+  const [timer, setTimer] = useState(30)
+  const [active, setActive] = useState(false)
+  const [hint, setHint] = useState(false)
+  const [msg, setMsg] = useState('')
   const [finished, setFinished] = useState(false)
 
+  const start = () => {
+    setScore(0); setRound(1); setActive(true); setFinished(false)
+    setInput(''); setHint(false); setMsg(''); setTimer(30)
+    setCurrent(PUZZLES[Math.floor(Math.random() * PUZZLES.length)])
+  }
+
+  useEffect(() => {
+    if (!active) return
+    if (timer <= 0) { setFinished(true); setActive(false); return }
+    const t = setTimeout(() => setTimer(s => s - 1), 1000)
+    return () => clearTimeout(t)
+  }, [timer, active])
+
   const check = () => {
-    if (!guess.trim()) return
-    const correct = guess.toLowerCase().trim() === PUZZLES[current].answer.toLowerCase()
-    if (correct) {
-      setScore(s => s + 10)
-      setResult('correct')
-    } else {
-      setResult('wrong')
-    }
-    setAttempts(a => {
-      const na = a + 1
-      setTimeout(() => {
-        if (current + 1 < PUZZLES.length) { setCurrent(c => c + 1); setResult(null); setGuess('') }
-        else { setFinished(true) }
-      }, 1000)
-      return na
-    })
+    if (!current) return
+    if (input.toLowerCase().trim() === current.a.toLowerCase()) {
+      setScore(s => s + 1); setMsg('Correct!')
+      setTimeout(() => { setRound(r => r + 1); setInput(''); setHint(false); setMsg('')
+        setCurrent(PUZZLES[Math.floor(Math.random() * PUZZLES.length)]); setTimer(30) }, 1000)
+    } else setMsg('Try again')
   }
-
-  const reset = () => {
-    setCurrent(0); setGuess(''); setScore(0); setAttempts(0); setResult(null); setFinished(false)
-  }
-
-  if (finished) return (
-    <ToolLayout title="Emoji Riddles" description="Guess the phrase from emoji clues! Timed rounds and increasing difficulty." category="Fun Generators">
-      <Paper sx={{ p: 6, borderRadius: 4, textAlign: 'center' }}>
-        <Typography variant="h1" fontWeight={800} color="primary.main" sx={{ fontSize: '4rem' }}>{score}</Typography>
-        <Typography variant="h6" mb={3}>Points!</Typography>
-        <Typography color="text.secondary" mb={4}>{PUZZLES.length} riddles completed</Typography>
-        <Button variant="contained" onClick={reset} startIcon={<ShuffleIcon />}>Play Again</Button>
-      </Paper>
-    </ToolLayout>
-  )
 
   return (
-    <ToolLayout title="Emoji Riddles" description="Guess the phrase from emoji clues! Timed rounds and increasing difficulty." category="Fun Generators">
+    <ToolLayout title="Emoji Riddles" description="Guess the phrase from emoji clues! Timed rounds with hints." category="Fun Generators">
       <Paper sx={{ p: 4, borderRadius: 4, textAlign: 'center' }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4 }}>
-          <Chip label={`${current + 1}/${PUZZLES.length}`} size="small" />
-          <Chip label={`Score: ${score}`} color="primary" size="small" />
-        </Box>
-        <Typography variant="h2" sx={{ fontSize: '4rem', mb: 4 }}>{PUZZLES[current].emoji}</Typography>
-        <TextField
-          value={guess}
-          onChange={e => { if (!result) setGuess(e.target.value) }}
-          onKeyDown={e => e.key === 'Enter' && check()}
-          placeholder="What' the phrase?"
-          fullWidth
-          sx={{ mb: 2, maxWidth: 400, mx: 'auto', display: 'block' }}
-        />
-        {result && (
-          <Chip
-            label={result === 'correct' ? `Correct! "${PUZZLES[current].answer}"` : `Wrong! It was "${PUZZLES[current].answer}"`}
-            color={result === 'correct' ? 'success' : 'error'}
-            sx={{ mb: 2, fontWeight: 600 }}
-          />
+        {!active && !finished ? (
+          <Box>
+            <Typography variant="h5" fontWeight={700} mb={2}>Emoji Riddles</Typography>
+            <Typography color="text.secondary" mb={4}>Guess words and phrases from emoji clues</Typography>
+            <Button variant="contained" size="large" onClick={start}>Start Game</Button>
+          </Box>
+        ) : finished ? (
+          <Box>
+            <Typography variant="h4" fontWeight={800} color="primary.main">Game Over!</Typography>
+            <Typography variant="h5" mt={2}>Score: {score}</Typography>
+            <Button variant="contained" onClick={start} sx={{ mt: 3 }}>Play Again</Button>
+          </Box>
+        ) : (
+          <>
+            <Stack direction="row" justifyContent="space-between" mb={2}>
+              <Chip label={`Round ${round}`} size="small" />
+              <Chip label={`Score: ${score}`} color="primary" size="small" />
+              <Chip label={`${timer}s`} color={timer < 10 ? 'error' : 'default'} size="small" />
+            </Stack>
+            <LinearProgress variant="determinate" value={(timer / 30) * 100} sx={{ mb: 4, height: 8, borderRadius: 4 }} />
+            <Typography variant="h1" sx={{ fontSize: '5rem', mb: 4 }}>{current?.e}</Typography>
+            <Stack direction="row" spacing={2} mb={2}>
+              <TextField value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && check()}
+                placeholder="Your guess..." size="small" sx={{ flex: 1 }} error={msg === 'Try again'} />
+              <Button variant="contained" onClick={check}>Guess</Button>
+            </Stack>
+            {hint ? <Typography variant="body2" color="text.secondary">Hint: {current?.h}</Typography> :
+              <Button size="small" onClick={() => setHint(true)}>Show Hint</Button>}
+            {msg === 'Correct!' && <Chip label="Correct!" color="success" sx={{ mt: 2 }} />}
+          </>
         )}
-        <Button variant="contained" onClick={check} disabled={!!result || !guess.trim()} sx={{ px: 4 }}>
-          Submit Guess
-        </Button>
       </Paper>
     </ToolLayout>
   )

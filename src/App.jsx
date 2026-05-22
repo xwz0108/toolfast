@@ -4,7 +4,6 @@ import { ThemeProvider, createTheme, CssBaseline } from '@mui/material'
 import { HelmetProvider } from 'react-helmet-async'
 import Layout from './components/Layout'
 
-// Route-level code splitting
 const Home = lazy(() => import('./pages/Home'))
 const SpinWheel = lazy(() => import('./pages/tools/SpinWheel'))
 const FancyText = lazy(() => import('./pages/tools/FancyText'))
@@ -34,6 +33,9 @@ const Game2048 = lazy(() => import('./pages/tools/Game2048'))
 const ColorPalette = lazy(() => import('./pages/tools/ColorPalette'))
 const EmojiRiddles = lazy(() => import('./pages/tools/EmojiRiddles'))
 const PeriodTracker = lazy(() => import('./pages/tools/PeriodTracker'))
+const MemeMaker = lazy(() => import('./pages/tools/MemeMaker'))
+const FakeChat = lazy(() => import('./pages/tools/FakeChat'))
+const FakeReceipt = lazy(() => import('./pages/tools/FakeReceipt'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 
 const theme = createTheme({
@@ -116,6 +118,9 @@ export default function App() {
                 <Route path="/tools/2048" element={<Game2048 />} />
                 <Route path="/tools/emoji-riddles" element={<EmojiRiddles />} />
                 <Route path="/tools/period-tracker" element={<PeriodTracker />} />
+                <Route path="/tools/meme-maker" element={<MemeMaker />} />
+                <Route path="/tools/fake-chat" element={<FakeChat />} />
+                <Route path="/tools/fake-receipt" element={<FakeReceipt />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
