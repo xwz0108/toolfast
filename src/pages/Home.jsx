@@ -120,10 +120,10 @@ export default function Home() {
   return (
     <>
       <Helmet>
-        <title>ToolFast — {tools.length} Free Online Tools, No Sign-Up</title>
-        <meta name="description" content={`${tools.length} free online tools for creativity, decision-making, games, and calculations. No registration. No tracking. Just tools.`} />
+        <title>{'ToolFast — ' + tools.length + ' Free Online Tools, No Sign-Up'}</title>
+        <meta name="description" content={tools.length + ' free online tools for creativity, decision-making, games, and calculations. No registration. No tracking. Just tools.'} />
         <link rel="canonical" href="https://toolfast.xxddsses.com/" />
-        <meta property="og:title" content={`ToolFast — ${tools.length} Free Online Tools`} />
+        <meta property="og:title" content={'ToolFast — ' + tools.length + ' Free Online Tools'} />
         <meta property="og:description" content="All free. No sign-up required. Instant access from your browser." />
         <meta property="og:url" content="https://toolfast.xxddsses.com/" />
         <script type="application/ld+json">{JSON.stringify({

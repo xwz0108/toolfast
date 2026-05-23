@@ -76,12 +76,11 @@ export default function ToolLayout({ title, description, category, children }) {
   return (
     <>
       <Helmet>
-        <title>{title} — Free Online Tool | ToolFast</title>
-        <meta name="description" content={description?.slice(0, 160)} />
+        <title>{title + ' — Free Online Tool | ToolFast'}</title>
+        <meta name="description" content={description?.slice(0, 160) || ''} />
         <link rel="canonical" href={url} />
 
-        {/* Open Graph */}
-        <meta property="og:title" content={`${title} — Free Online Tool | ToolFast`} />
+        <meta property="og:title" content={title + ' — Free Online Tool | ToolFast'} />
         <meta property="og:description" content={description?.slice(0, 200)} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={url} />
