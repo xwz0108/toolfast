@@ -44,6 +44,8 @@ const HTTPHeaders = lazy(() => import('./pages/tools/HTTPHeaders'))
 const RegexVisualizer = lazy(() => import('./pages/tools/RegexVisualizer'))
 const BrowserFingerprint = lazy(() => import('./pages/tools/BrowserFingerprint'))
 const IPCalculator = lazy(() => import('./pages/tools/IPCalculator'))
+const AIToolComparator = lazy(() => import('./pages/tools/AIToolComparator'))
+const CommissionCalculator = lazy(() => import('./pages/tools/CommissionCalculator'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 
 const theme = createTheme({
@@ -183,6 +185,8 @@ export default function App() {
                 <Route path="/tools/regex-visualizer" element={<RegexVisualizer />} />
                 <Route path="/tools/browser-fingerprint" element={<BrowserFingerprint />} />
                 <Route path="/tools/ip-calculator" element={<IPCalculator />} />
+                <Route path="/tools/ai-tool-comparator" element={<AIToolComparator />} />
+                <Route path="/tools/commission-calculator" element={<CommissionCalculator />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>

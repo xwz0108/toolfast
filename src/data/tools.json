@@ -622,5 +622,38 @@
     "difficulty": 2,
     "icon": "network",
     "featured": true
+  },
+  {
+    "id": "ai-tool-comparator",
+    "name": "AI Tool Comparator",
+    "category": "Developer Tools",
+    "description": "Compare the best AI tools side by side. Find the right AI writing, image, coding, or video tool with pricing and features.",
+    "tags": [
+      "ai",
+      "compare",
+      "tool",
+      "writing",
+      "image",
+      "coding"
+    ],
+    "difficulty": 2,
+    "icon": "compare",
+    "featured": true
+  },
+  {
+    "id": "commission-calculator",
+    "name": "Affiliate Commission Calculator",
+    "category": "Life Calculators",
+    "description": "Calculate your potential earnings from affiliate programs. Compare one-time, recurring, and revenue-share commission models.",
+    "tags": [
+      "commission",
+      "affiliate",
+      "income",
+      "calculator",
+      "passive"
+    ],
+    "difficulty": 1,
+    "icon": "money",
+    "featured": false
   }
 ]
