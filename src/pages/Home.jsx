@@ -84,7 +84,7 @@ function CategoryBento({ category, tools, innerRef }) {
   const cc = categoryColors[category] || categoryColors['Creative']
   const visible = tools.slice(0, 4)
   return (
-    <motion.div {...fadeUp} ref={innerRef}>
+    <motion.div {...fadeUp} ref={innerRef} style={{ scrollMarginTop: 80 }}>
       <Box sx={{ mb: 5 }}>
         {/* Category header */}
         <Stack direction="row" alignItems="center" spacing={1.5} mb={3}>
