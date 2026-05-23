@@ -10,7 +10,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import BoltIcon from '@mui/icons-material/Bolt'
 import tools from '../data/tools.json'
 
-const categories = ['All', 'Decision & Random', 'Creative', 'Mini Games', 'Life Calculators', 'Text Fun', 'Fun Generators']
+const categories = ['All', 'Decision & Random', 'Creative', 'Mini Games', 'Life Calculators', 'Text Fun', 'Fun Generators', 'Developer Tools']
 
 export default function Layout({ children }) {
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -72,7 +72,7 @@ export default function Layout({ children }) {
             {/* Desktop Nav */}
             {!isMobile && (
               <Stack direction="row" spacing={0.5}>
-                {categories.slice(1, 6).map(cat => (
+                {categories.slice(1).map(cat => (
                   <Chip
                     key={cat}
                     label={cat}
