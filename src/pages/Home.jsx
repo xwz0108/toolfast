@@ -82,7 +82,6 @@ function ToolCard({ tool, index }) {
 
 function CategoryBento({ category, tools, innerRef }) {
   const cc = categoryColors[category] || categoryColors['Creative']
-  const visible = tools.slice(0, 4)
   return (
     <motion.div {...fadeUp} ref={innerRef} style={{ scrollMarginTop: 80 }}>
       <Box sx={{ mb: 5 }}>
@@ -96,7 +95,7 @@ function CategoryBento({ category, tools, innerRef }) {
         </Stack>
 
         <Grid container spacing={2}>
-          {visible.map((tool, i) => (
+          {tools.map((tool, i) => (
             <Grid item xs={6} md={3} key={tool.id}>
               <ToolCard tool={tool} index={i} />
             </Grid>
