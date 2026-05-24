@@ -474,6 +474,12 @@ export default function AIToolComparator() {
             {' '}to see how much you could make.
           </Typography>
         </Box>
+
+        <Box sx={{ mt: 4, p: 3, borderRadius: 3, bgcolor: 'rgba(52,211,153,0.06)', border: '1px solid rgba(52,211,153,0.15)', textAlign: 'center' }}>
+          <Typography variant="subtitle1" fontWeight={700} color="#6ee7b7">Want detailed AI tool reviews?</Typography>
+          <Typography variant="body2" color="text.secondary" mt={0.5} mb={2}>Read our honest comparisons at AI Tools — test methodology, pricing breakdowns, and real use cases.</Typography>
+          <Chip label="AI Tools Reviews →" component="a" href="https://aitools.xxddsses.com" clickable sx={{ bgcolor: 'rgba(52,211,153,0.15)', color: '#6ee7b7', fontWeight: 600 }} />
+        </Box>
       </Paper>
     </ToolLayout>
   )
