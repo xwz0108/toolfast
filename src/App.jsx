@@ -52,6 +52,8 @@ const WebsiteWorth = lazy(() => import('./pages/tools/WebsiteWorth'))
 const KeywordDensity = lazy(() => import('./pages/tools/KeywordDensity'))
 const ABTestCalc = lazy(() => import('./pages/tools/ABTestCalc'))
 const SubjectTester = lazy(() => import('./pages/tools/SubjectTester'))
+const BlogList = lazy(() => import('./pages/BlogList'))
+const BlogPost = lazy(() => import('./pages/BlogPost'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 
 const theme = createTheme({
@@ -199,6 +201,8 @@ export default function App() {
                 <Route path="/tools/keyword-density" element={<KeywordDensity />} />
                 <Route path="/tools/ab-test-calculator" element={<ABTestCalc />} />
                 <Route path="/tools/subject-tester" element={<SubjectTester />} />
+                <Route path="/blog" element={<BlogList />} />
+                <Route path="/blog/:slug" element={<BlogPost />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>

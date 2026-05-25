@@ -72,6 +72,7 @@ export default function Layout({ children }) {
             {/* Desktop Nav */}
             {!isMobile && (
               <Stack direction="row" spacing={0.5}>
+                <Chip label="Blog" component={Link} to="/blog" variant="filled" size="small" clickable sx={{ fontWeight: 600, mr: 1 }} />
                 {categories.slice(1).map(cat => (
                   <Chip
                     key={cat}
