@@ -31,6 +31,14 @@ const posts = [
   { slug: 'best-free-regex-testers', title: 'Best Free Regex Testers Online (2026 Compared)', desc: 'Test regex patterns with these free tools. Head-to-head comparison.', cat: 'Comparison', date: 'May 2026', tool: 'regex-visualizer' },
   { slug: 'best-free-cron-editors', title: 'Best Free Cron Expression Editors (2026)', desc: 'Visualize cron schedules with these free tools. Side-by-side comparison.', cat: 'Comparison', date: 'May 2026', tool: 'cron-visualizer' },
   { slug: 'top-10-free-developer-tools', title: 'Top 10 Free Developer Tools You Need in 2026', desc: 'Ten tools every developer should bookmark — all free, no sign-up.', cat: 'Comparison', date: 'May 2026', tool: null },
+  { slug: 'best-free-ai-image-generators', title: 'Best Free AI Image Generators 2026 (Tested)', desc: 'Create AI images without paying. Leonardo, DALL-E, Firefly compared.', cat: 'Best Of', date: 'May 2026', tool: null },
+  { slug: 'best-free-website-builders', title: 'Best Free Website Builders 2026 (No Credit Card)', desc: 'Build a site without spending. Wix, Webflow, Carrd, and Vercel compared.', cat: 'Best Of', date: 'May 2026', tool: null },
+  { slug: 'best-free-vpn-services', title: 'Best Free VPN Services 2026 (Tested for Privacy)', desc: 'Safe free VPNs that respect your privacy. Proton, Windscribe compared.', cat: 'Best Of', date: 'May 2026', tool: null },
+  { slug: 'best-free-api-testing-tools', title: 'Best Free API Testing Tools 2026', desc: 'Test APIs without paying. Postman, Hoppscotch, Insomnia compared.', cat: 'Best Of', date: 'May 2026', tool: null },
+  { slug: 'best-free-stock-photo-sites', title: 'Best Free Stock Photo Sites 2026 (No Attribution)', desc: 'Free high-quality photos. Unsplash, Pexels, Pixabay ranked and compared.', cat: 'Best Of', date: 'May 2026', tool: null },
+  { slug: 'best-free-icon-libraries', title: 'Best Free Icon Libraries for Developers (2026)', desc: 'Lucide, Phosphor, Material Icons compared. Best icon sets for your app.', cat: 'Best Of', date: 'May 2026', tool: null },
+  { slug: 'best-free-mockup-generators', title: 'Best Free Mockup Generators 2026', desc: 'Create product mockups without Photoshop. Shots.so, Placeit compared.', cat: 'Best Of', date: 'May 2026', tool: null },
+  { slug: 'best-free-online-sql-formatters-compared', title: 'Best Free SQL Formatters Online (Honest Comparison)', desc: '8 SQL formatters tested head-to-head. Speed, features, and quality ranked.', cat: 'Best Of', date: 'May 2026', tool: 'sql-formatter' },
 ]
 
 export default function BlogList() {

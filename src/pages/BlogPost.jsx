@@ -71,7 +71,15 @@ const metaData = {
   'best-free-jwt-debuggers': { title: 'Best Free JWT Debuggers Online (2026)', desc: 'Decode and verify JWT tokens with these free tools compared.', tool: 'jwt-decoder' },
   'best-free-regex-testers': { title: 'Best Free Regex Testers Online (2026 Compared)', desc: 'Test regex patterns with these free tools compared.', tool: 'regex-visualizer' },
   'best-free-cron-editors': { title: 'Best Free Cron Expression Editors (2026)', desc: 'Visualize cron schedules with these free tools compared.', tool: 'cron-visualizer' },
-  'top-10-free-developer-tools': { title: 'Top 10 Free Developer Tools You Need in 2026', desc: 'Ten tools every developer should bookmark — all free, no sign-up.', tool: null },
+  'top-10-free-developer-tools': { title: 'Top 10 Free Developer Tools You Need in 2026', desc: 'Ten tools every developer should bookmark.', tool: null },
+  'best-free-ai-image-generators': { title: 'Best Free AI Image Generators 2026 (Tested)', desc: 'Create AI images without paying a cent.', tool: null },
+  'best-free-website-builders': { title: 'Best Free Website Builders 2026', desc: 'Build a professional website without spending.', tool: null },
+  'best-free-vpn-services': { title: 'Best Free VPN Services 2026 (Tested)', desc: 'Safe free VPNs that respect your privacy.', tool: null },
+  'best-free-api-testing-tools': { title: 'Best Free API Testing Tools 2026', desc: 'Test and debug APIs with these free tools.', tool: null },
+  'best-free-stock-photo-sites': { title: 'Best Free Stock Photo Sites 2026', desc: 'High-quality free stock photos for any project.', tool: null },
+  'best-free-icon-libraries': { title: 'Best Free Icon Libraries for Developers', desc: 'Best free icon sets for web and app development.', tool: null },
+  'best-free-mockup-generators': { title: 'Best Free Mockup Generators 2026', desc: 'Create product mockups without Photoshop.', tool: null },
+  'best-free-online-sql-formatters-compared': { title: 'Best Free SQL Formatters (Honest Comparison)', desc: '8 SQL formatters tested head-to-head.', tool: 'sql-formatter' },
 }
 
 export default function BlogPost() {
